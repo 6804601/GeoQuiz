@@ -42,4 +42,8 @@ public class Crime {
     mID = UUID.randomUUID();
     mDate = new Date();
     }
+
+    public boolean isSolved() {
+        return isSolved();
+    }
 }
