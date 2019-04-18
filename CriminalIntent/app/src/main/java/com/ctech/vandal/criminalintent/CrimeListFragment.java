@@ -1,5 +1,6 @@
 package com.ctech.vandal.criminalintent;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -19,9 +19,7 @@ public class CrimeListFragment extends Fragment {
 
     private RecyclerView mCrimeRecyclerView;
     private CrimeAdapter mAdapter;
-    private ImageView mSolvedImageView;
 
-    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
@@ -34,19 +32,34 @@ public class CrimeListFragment extends Fragment {
 
         return myView;
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        updateUI();
+    }
+
     private void updateUI(){
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
 
-        mAdapter = new CrimeAdapter(crimes);
-        mCrimeRecyclerView.setAdapter(mAdapter);
+        if(mAdapter == null) {
+            mAdapter = new CrimeAdapter(crimes);
+            mCrimeRecyclerView.setAdapter(mAdapter);
+        } else{
+            mAdapter.notifyDataSetChanged();
+        }
     }
+
     private class CrimeHolder extends RecyclerView.ViewHolder
         implements View.OnClickListener{
+
         private TextView mTitleTextView;
         private TextView mDateTextView;
+        private ImageView mSolvedImageView;
 
         private Crime mCrime;
+        private static final String EXTRA_CRIME_ID = "com.ctech.vandal.criminalintent.crime_id";
 
         public CrimeHolder(LayoutInflater inflater, ViewGroup parent){
             super(inflater.inflate(R.layout.list_item_crime, parent, false));
@@ -58,10 +71,12 @@ public class CrimeListFragment extends Fragment {
 
             itemView.setOnClickListener(this);
         }
+        @Override
         public void onClick(View v){
-                Toast.makeText(getActivity(),
+               /* Toast.makeText(getActivity(),
                         mCrime.getTitle() +" clicked!",
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_SHORT).show();*/
+            Intent myIntent = CrimeActivity.newIntent(getActivity(), mCrime.getID());
             }
         public void bind(Crime crime){
             mCrime = crime;
@@ -80,8 +95,8 @@ public class CrimeListFragment extends Fragment {
         @NonNull
         @Override
         public CrimeHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i){
-            LayoutInflater myLayoutInflator = LayoutInflater.from(getActivity());
-            return new CrimeHolder(myLayoutInflator, viewGroup);
+            LayoutInflater myLayoutInflater = LayoutInflater.from(getActivity());
+            return new CrimeHolder(myLayoutInflater, viewGroup);
         }
         @Override
         public void onBindViewHolder(@NonNull CrimeHolder crimeHolder, int position){
