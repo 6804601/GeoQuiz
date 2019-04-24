@@ -85,6 +85,7 @@ public class CrimeFragment extends Fragment {
         });
 
         mSolvedCheckBox = v.findViewById(R.id.crime_solved);
+        mCrime.setSolved(false);
         mSolvedCheckBox.setChecked(mCrime.isSolved());
         mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
