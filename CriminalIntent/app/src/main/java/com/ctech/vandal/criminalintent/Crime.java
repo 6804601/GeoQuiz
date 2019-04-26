@@ -9,9 +9,12 @@ public class Crime {
     private Date mDate;
     private Boolean mSolved;
 
-    public Crime(){
-        mID = UUID.randomUUID();
+    public Crime(UUID id){
+        mID = id;
         mDate = new Date();
+    }
+    public Crime(){
+        this(UUID.randomUUID());
     }
 
     public UUID getID() {
