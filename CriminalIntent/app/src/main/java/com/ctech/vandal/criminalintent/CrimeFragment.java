@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.text.format.DateFormat;
 
 import java.util.Date;
 import java.util.UUID;
@@ -33,7 +34,7 @@ public class CrimeFragment extends Fragment {
     private Button mDateButton;
     private CheckBox mSolvedCheckBox;
 
-    public static CrimeFragment newInstance(UUID crimeID){
+    public static CrimeFragment newInstance(UUID crimeID) {
         Bundle myBundle = new Bundle();
         myBundle.putSerializable(BUNDLE_CRIME_ID, crimeID);
 
@@ -74,9 +75,9 @@ public class CrimeFragment extends Fragment {
         mDateButton = v.findViewById(R.id.crime_date);
         updateDate();
 
-        mDateButton.setOnClickListener(new View.OnClickListener(){
+        mDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view){
+            public void onClick(View view) {
                 FragmentManager manager = getFragmentManager();
                 DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
                 dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
@@ -89,7 +90,7 @@ public class CrimeFragment extends Fragment {
         mSolvedCheckBox.setChecked(mCrime.isSolved());
         mSolvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton , boolean isChecked) {
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 mCrime.setSolved(isChecked);
             }
         });
@@ -97,8 +98,8 @@ public class CrimeFragment extends Fragment {
     }
 
 
-    public void onAcivityResult(int requestCode, int resultCode, Intent data){
-        if (resultCode != Activity.RESULT_OK){
+    public void onAcivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
             return;
         }
         if (requestCode == REQUEST_DATE) {
@@ -110,6 +111,25 @@ public class CrimeFragment extends Fragment {
 
     private void updateDate() {
         mDateButton.setText(mCrime.getDate().toString());
+    }
+
+    private String getCrimeReport() {
+        String solvedString = null;
+        if (mCrime.isSolved()) {
+            solvedString = getString(R.string.crime_report_solved);
+        } else {
+            solvedString = getString(R.string.crime_report_unsolved);
+        }
+        String dateFormat = "EEE, MMM dd";
+        String dateString = String.format(dateFormat, mCrime.getDate()).toString();
+        String suspect = mCrime.getSuspect();
+        if (suspect == null) {
+            suspect = getString(R.string.crime_report_no_suspect);
+        } else {
+            suspect = getString(R.string.crime_report,
+                    mCrime.getTitle(), dateString, solvedString, suspect);
+            return report;
+        }
     }
 
     @Override public void onPause() {
